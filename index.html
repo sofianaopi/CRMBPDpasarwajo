@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CRM Kredit Pasarwajo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#f3f5f4; --surface:#ffffff; --surface-2:#eaefed; --line:#d6dedb;
+  --fg:#14211e; --muted:#5b6b67; --accent:#0d6b5c; --accent-ink:#ffffff; --accent-soft:#d8ece7;
+  --gold:#b7841f; --good:#1f7a43; --good-soft:#dcefe2; --warn:#a46200; --warn-soft:#f6e8cf; --bad:#b0322b; --bad-soft:#f6dcda;
+  --head:#0f3b35; --head-fg:#eaf4f1; --head-muted:#a9c7c0;
+  --f-body:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --r:10px; color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0e1514; --surface:#151f1d; --surface-2:#1c2826; --line:#2a3936;
+  --fg:#e3ece9; --muted:#93a6a1; --accent:#3fb39c; --accent-ink:#04211b; --accent-soft:#16342e;
+  --gold:#d9a845; --good:#5cc483; --good-soft:#163222; --warn:#e3a33f; --warn-soft:#352812; --bad:#ef7a72; --bad-soft:#3a1c1a;
+  --head:#0a2421; --head-fg:#e3f1ed; --head-muted:#86a9a1; color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.5}
+[hidden]{display:none!important}
+.wrap{max-width:1180px;margin:0 auto;padding-left:16px;padding-right:16px}
+header{position:sticky;top:0;z-index:5;background:var(--head);color:var(--head-fg)}
+.hrow{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;padding-block:14px 0}
+.brand{display:flex;flex-direction:column;min-width:0;margin-right:auto}
+.brand b{font-size:18px;font-weight:800;letter-spacing:-.01em}
+.brand span{font-size:12px;color:var(--head-muted);letter-spacing:.06em;text-transform:uppercase}
+.ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+.ctl label{display:flex;flex-direction:column;font-size:11px;color:var(--head-muted);letter-spacing:.05em;text-transform:uppercase;gap:2px}
+.ctl select{background:transparent;color:var(--head-fg);border:1px solid rgba(234,244,241,.3);border-radius:8px;padding:6px 8px;font:inherit;font-size:13px}
+.ctl select option{color:var(--fg);background:var(--surface)}
+.who-am-i{font-size:13px;text-align:right}
+.who-am-i b{display:block}
+.who-am-i span{color:var(--head-muted);font-size:12px}
+.hbtn{background:none;border:1px solid rgba(234,244,241,.3);color:var(--head-fg);border-radius:8px;padding:6px 10px;font:600 12px var(--f-body);cursor:pointer}
+nav{display:flex;gap:4px;overflow-x:auto;padding-top:10px}
+nav button{background:none;border:0;color:var(--head-muted);font:600 14px var(--f-body);padding:10px 14px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+nav button[aria-selected="true"]{color:var(--head-fg);border-bottom-color:var(--gold)}
+main{padding-block:22px 48px;display:flex;flex-direction:column;gap:22px}
+section.view{display:flex;flex-direction:column;gap:18px}
+h2{font-size:20px;margin:0;letter-spacing:-.01em}
+h3{font-size:15px;margin:0}
+.sub{color:var(--muted);font-size:13px;margin:2px 0 0}
+.sechead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:10px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;min-width:0}
+.notice{border-radius:var(--r);padding:10px 14px;font-size:13px;background:var(--warn-soft);border:1px solid var(--line)}
+.notice.ok{background:var(--good-soft)}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.kpis.k3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:860px){.kpis,.kpis.k3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.kpis,.kpis.k3{grid-template-columns:minmax(0,1fr)}}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.kpi .lb{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600}
+.kpi .v{font-family:var(--f-num);font-size:24px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.kpi .v small{font-size:13px;color:var(--muted);font-weight:500}
+.kpi .d{font-size:12px;color:var(--muted)}
+.meter{height:6px;background:var(--surface-2);border-radius:99px;overflow:hidden}
+.meter i{display:block;height:100%;border-radius:99px}
+.good{background:var(--good)} .warn{background:var(--warn)} .bad{background:var(--bad)}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:16px}
+@media (max-width:900px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.funnel{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.frow{display:grid;grid-template-columns:150px minmax(0,1fr) 36px;gap:10px;align-items:center;font-size:13px}
+.frow .bar{height:22px;background:var(--surface-2);border-radius:5px;overflow:hidden}
+.frow .bar i{display:block;height:100%;background:var(--accent);opacity:.8;border-radius:5px}
+.frow.done .bar i{background:var(--good);opacity:1}
+.frow.lost .bar i{background:var(--bad);opacity:.6}
+.frow .n{font-family:var(--f-num);text-align:right;font-weight:600}
+.tbl{overflow-x:auto;margin-top:10px}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:13px}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;font-weight:600;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+.num{text-align:right;font-family:var(--f-num);font-variant-numeric:tabular-nums;white-space:nowrap}
+.nm b{display:block;font-weight:600}
+.nm span{font-size:12px;color:var(--muted)}
+.cap{display:flex;align-items:center;gap:8px;min-width:150px}
+.cap .meter{flex:1}
+.cap span{font-family:var(--f-num);font-size:12px;width:44px;text-align:right}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap}
+.p-good{background:var(--good-soft);color:var(--good)} .p-warn{background:var(--warn-soft);color:var(--warn)} .p-bad{background:var(--bad-soft);color:var(--bad)}
+.p-st{background:var(--accent-soft);color:var(--accent)} .p-mute{background:var(--surface-2);color:var(--muted)}
+.btn{font:600 13px var(--f-body);border-radius:8px;padding:8px 14px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.pri{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.sm{padding:5px 10px;font-size:12px}
+.btn.ghost{background:none;border-color:transparent;color:var(--muted)}
+.btn:disabled{opacity:.5;cursor:wait}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+form.fm{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}
+@media (max-width:760px){form.fm{grid-template-columns:minmax(0,1fr)}}
+.fld{display:flex;flex-direction:column;gap:4px;min-width:0}
+.fld.wide{grid-column:1/-1}
+.fld label{font-size:12px;font-weight:600;color:var(--muted)}
+input,select{font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)}
+.fld input,.fld select{width:100%}
+.fact{grid-column:1/-1;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.flt{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+td select{font-size:12px;padding:4px 6px}
+td input.tg{width:90px;text-align:right;font-family:var(--f-num);padding:5px 8px;font-size:13px}
+td input.tg.wide{width:140px}
+.stale{color:var(--warn);font-size:12px;font-weight:600}
+.empty{padding:28px 16px;text-align:center;color:var(--muted)}
+.empty b{display:block;color:var(--fg);font-size:15px;margin-bottom:4px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:13px;z-index:20;max-width:90vw}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.login{min-height:100vh;display:grid;place-items:center;padding:24px 16px;background:var(--head)}
+.login .card{background:var(--surface);border-radius:14px;padding:28px 24px;width:100%;max-width:380px;display:flex;flex-direction:column;gap:14px}
+.login .card .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.login h1{font-size:22px;margin:0;letter-spacing:-.01em}
+.err{color:var(--bad);font-size:13px;min-height:1.2em}
+.secret{font-family:var(--f-num);font-size:16px;background:var(--surface-2);padding:6px 10px;border-radius:6px;user-select:all}
+.loading{color:var(--muted);padding:40px 0;text-align:center}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div class="login" id="scr-login">
+  <form class="card" id="fm-login">
+    <div><div class="eyebrow">Bank Sultra · Cabang Pasarwajo</div><h1>CRM Kredit &amp; Pemasaran</h1></div>
+    <div class="fld"><label for="l-user">Username</label><input id="l-user" autocomplete="username" required autocapitalize="none"></div>
+    <div class="fld"><label for="l-pass">Password</label><input id="l-pass" type="password" autocomplete="current-password" required></div>
+    <div class="err" id="l-err"></div>
+    <button class="btn pri" id="l-btn" type="submit">Masuk</button>
+    <p class="sub">Lupa password? Minta pimpinan cabang untuk meresetnya.</p>
+  </form>
+</div>
+
+<!-- ============ GANTI PASSWORD ============ -->
+<div class="login" id="scr-pw" hidden>
+  <form class="card" id="fm-pw">
+    <div><div class="eyebrow" id="pw-eyebrow">Keamanan akun</div><h1>Ganti password</h1></div>
+    <p class="sub" id="pw-why"></p>
+    <div class="fld"><label for="pw-old">Password lama / sementara</label><input id="pw-old" type="password" autocomplete="current-password" required></div>
+    <div class="fld"><label for="pw-new">Password baru (min. 8 karakter)</label><input id="pw-new" type="password" autocomplete="new-password" minlength="8" required></div>
+    <div class="fld"><label for="pw-new2">Ulangi password baru</label><input id="pw-new2" type="password" autocomplete="new-password" minlength="8" required></div>
+    <div class="err" id="pw-err"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="btn ghost" id="pw-cancel">Kembali</button><button class="btn pri" id="pw-btn" type="submit">Simpan password</button></div>
+  </form>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="scr-app" hidden>
+<header>
+  <div class="wrap">
+    <div class="hrow">
+      <div class="brand"><span>Bank Sultra · Cabang Pasarwajo</span><b>CRM Kredit &amp; Pemasaran</b></div>
+      <div class="ctl">
+        <label for="periode">Periode<select id="periode"></select></label>
+        <div class="who-am-i"><b id="me-nama"></b><span id="me-jab"></span></div>
+        <button class="hbtn" id="btn-pw">Ganti password</button>
+        <button class="hbtn" id="btn-out">Keluar</button>
+      </div>
+    </div>
+    <nav id="tabs"></nav>
+  </div>
+</header>
+<div class="wrap"><main>
+  <div class="loading" id="loading">Memuat data…</div>
+
+  <!-- PEGAWAI: prospek saya -->
+  <section class="view" id="v-saya" hidden>
+    <div class="sechead"><div><h2 id="saya-title">Target &amp; prospek saya</h2><p class="sub" id="saya-sub"></p></div></div>
+    <div class="kpis k3" id="saya-kpi"></div>
+    <div class="sechead">
+      <div><h3>Prospek saya</h3><p class="sub">Input calon nasabah yang siap diprospek, lalu naikkan statusnya sampai cair.</p></div>
+      <button class="btn pri" id="btn-new">+ Tambah prospek</button>
+    </div>
+    <div class="panel" id="form-panel" hidden>
+      <h3 id="form-title">Prospek baru</h3>
+      <form class="fm" id="fm-prospek">
+        <div class="fld"><label for="f-nama">Nama calon nasabah</label><input id="f-nama" required maxlength="80"></div>
+        <div class="fld"><label for="f-telp">No. HP</label><input id="f-telp" inputmode="tel" maxlength="20"></div>
+        <div class="fld"><label for="f-alamat">Desa / Kelurahan</label><input id="f-alamat" maxlength="80"></div>
+        <div class="fld"><label for="f-produk">Produk</label><select id="f-produk"></select></div>
+        <div class="fld"><label for="f-plafon">Plafon diajukan (Rp)</label><input id="f-plafon" inputmode="numeric"></div>
+        <div class="fld"><label for="f-status">Status</label><select id="f-status"></select></div>
+        <div class="fld wide"><label for="f-catatan">Catatan tindak lanjut</label><input id="f-catatan" maxlength="200" placeholder="cth. Janji temu Kamis, bawa slip gaji"></div>
+        <div class="fact"><button type="button" class="btn ghost" id="btn-cancel">Batal</button><button class="btn pri" type="submit" id="btn-save">Simpan prospek</button></div>
+      </form>
+    </div>
+    <div class="panel">
+      <div class="flt"><input id="q" type="search" placeholder="Cari nama nasabah…"><select id="fl-st"></select></div>
+      <div class="tbl"><table id="tbl-saya"></table></div>
+    </div>
+  </section>
+
+  <!-- PIMPINAN: dashboard -->
+  <section class="view" id="v-dashboard" hidden>
+    <div class="sechead"><div><h2>Kinerja tim kredit &amp; pemasaran</h2><p class="sub" id="dash-sub"></p></div></div>
+    <div class="kpis" id="kpis"></div>
+    <div class="grid2">
+      <div class="panel"><h3>Pipeline prospek</h3><p class="sub">Prospek yang masih berjalan, ditambah yang cair &amp; batal pada periode ini.</p><div class="funnel" id="funnel"></div></div>
+      <div class="panel"><h3>Capaian per pegawai</h3><p class="sub">Realisasi pencairan terhadap target bulanan, diurutkan dari capaian tertinggi.</p>
+        <div class="tbl"><table id="rank"></table></div>
+        <div class="legend"><span><i class="good"></i>≥ 100% tercapai</span><span><i class="warn"></i>70–99% mendekati</span><span><i class="bad"></i>&lt; 70% perlu perhatian</span></div>
+      </div>
+    </div>
+    <div class="panel"><h3>Prospek perlu tindak lanjut</h3><p class="sub">Prospek aktif yang statusnya tidak berubah lebih dari 7 hari.</p><div class="tbl"><table id="stale"></table></div></div>
+  </section>
+
+  <!-- PIMPINAN: semua prospek -->
+  <section class="view" id="v-semua" hidden>
+    <div class="sechead"><div><h2>Semua prospek</h2><p class="sub">Tampilan pantauan. Perubahan status dilakukan oleh pegawai masing-masing.</p></div></div>
+    <div class="panel">
+      <div class="flt"><input id="q2" type="search" placeholder="Cari nama nasabah…"><select id="fl-peg2"></select><select id="fl-st2"></select></div>
+      <div class="tbl"><table id="tbl-semua"></table></div>
+    </div>
+  </section>
+
+  <!-- PIMPINAN: pegawai & target -->
+  <section class="view" id="v-pegawai" hidden>
+    <div class="sechead"><div><h2>Pegawai &amp; target</h2><p class="sub" id="tgt-sub"></p></div></div>
+    <div class="notice ok" id="temp-pw" hidden></div>
+    <div class="panel">
+      <h3>Target bulanan</h3>
+      <div class="tbl"><table id="tbl-target"></table></div>
+    </div>
+    <div class="panel">
+      <h3>Tambah akun</h3>
+      <form class="fm" id="fm-user">
+        <div class="fld"><label for="u-nama">Nama lengkap</label><input id="u-nama" required maxlength="60"></div>
+        <div class="fld"><label for="u-user">Username</label><input id="u-user" required maxlength="30" placeholder="cth. andi.s" autocapitalize="none"></div>
+        <div class="fld"><label for="u-jab">Jabatan</label><select id="u-jab"><option>Staf Kredit</option><option>Staf Marketing</option><option>Account Officer</option><option>Pimpinan</option></select></div>
+        <div class="fld"><label for="u-role">Peran</label><select id="u-role"><option value="pegawai">Pegawai</option><option value="pimpinan">Pimpinan</option></select></div>
+        <div class="fact"><button class="btn pri" type="submit" id="u-btn">Buat akun</button></div>
+      </form>
+    </div>
+  </section>
+</main></div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="config.js"></script>
+<script>
+(function(){
+const STAGES=[{k:"baru",l:"Prospek baru"},{k:"dihubungi",l:"Sudah dihubungi"},{k:"berkas",l:"Pengumpulan berkas"},{k:"analisa",l:"Analisa & survei"},{k:"disetujui",l:"Disetujui"},{k:"cair",l:"Cair (selesai)"},{k:"batal",l:"Batal / ditolak"}];
+const ACTIVE=["baru","dihubungi","berkas","analisa","disetujui"];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const num=s=>Number(String(s||"").replace(/[^\d]/g,""))||0;
+const fmtInt=n=>new Intl.NumberFormat("id-ID").format(Math.round(n||0));
+function rp(n){n=n||0;if(n>=1e9)return "Rp "+(n/1e9).toLocaleString("id-ID",{maximumFractionDigits:2})+" M";if(n>=1e6)return "Rp "+(n/1e6).toLocaleString("id-ID",{maximumFractionDigits:1})+" jt";return "Rp "+fmtInt(n)}
+const stLabel=k=>(STAGES.find(s=>s.k===k)||{l:k}).l;
+const ym=d=>String(d||"").slice(0,7);
+let TODAY=new Date().toISOString().slice(0,10);
+const daysSince=d=>d?Math.floor((new Date(TODAY+"T00:00:00")-new Date(d+"T00:00:00"))/864e5):0;
+const fmtDate=d=>d?new Date(d+"T00:00:00").toLocaleDateString("id-ID",{day:"numeric",month:"short"}):"–";
+const periodeLabel=p=>new Date(p+"-01T00:00:00").toLocaleDateString("id-ID",{month:"long",year:"numeric"});
+const tone=c=>c>=1?"good":c>=.7?"warn":"bad";
+const toneLabel=c=>c>=1?["p-good","Tercapai"]:c>=.7?["p-warn","Mendekati"]:["p-bad","Perlu perhatian"];
+const pct=c=>Math.round((c||0)*100)+"%";
+const ratio=(a,b)=>b?a/b:0;
+const meter=c=>`<div class="meter"><i class="${tone(c)}" style="width:${Math.min(100,(c||0)*100)}%"></i></div>`;
+function toast(m){const t=$("#toast");t.textContent=m;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,3200)}
+const ss={get(k){try{return sessionStorage.getItem(k)}catch(e){return null}},set(k,v){try{sessionStorage.setItem(k,v)}catch(e){}},del(k){try{sessionStorage.removeItem(k)}catch(e){}}};
+
+/* ---------- server call ---------- */
+let token=ss.get("crm-token"),me=null,data=null,view=null,periode=TODAY.slice(0,7);
+const API_URL=(window.CRM_CONFIG&&window.CRM_CONFIG.API_URL)||"";
+async function call(fn){
+  const args=[].slice.call(arguments,1);
+  if(!API_URL)throw new Error("Alamat server belum diisi. Isi API_URL di file config.js.");
+  let r;
+  try{
+    // text/plain agar tidak memicu preflight CORS; Apps Script membaca body sebagai teks JSON
+    const res=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({fn:fn,args:args})});
+    r=await res.json();
+  }catch(e){throw new Error("Tidak bisa terhubung ke server. Periksa koneksi internet, lalu coba lagi.")}
+  if(r&&r.ok)return r.data;
+  const m=String((r&&r.error)||"Terjadi kesalahan di server.");
+  if(m.indexOf("SESI_HABIS")>=0){endSession("Sesi Anda berakhir. Silakan masuk lagi.");throw new Error("Sesi berakhir.")}
+  throw new Error(m);
+}
+
+/* ---------- screens ---------- */
+function show(id){["#scr-login","#scr-pw","#scr-app"].forEach(s=>$(s).hidden=s!==id)}
+function endSession(msg){token=null;me=null;data=null;ss.del("crm-token");show("#scr-login");$("#l-err").textContent=msg||"";$("#l-pass").value=""}
+
+$("#fm-login").addEventListener("submit",async e=>{
+  e.preventDefault();const b=$("#l-btn");b.disabled=true;b.textContent="Memeriksa…";$("#l-err").textContent="";
+  try{const r=await call("login",$("#l-user").value,$("#l-pass").value);token=r.token;ss.set("crm-token",token);me=r.user;$("#l-pass").value="";afterLogin()}
+  catch(err){$("#l-err").textContent=err.message}
+  b.disabled=false;b.textContent="Masuk";
+});
+function afterLogin(){
+  if(me.gantiPassword){openPw(true);return}
+  startApp();
+}
+function openPw(forced){
+  show("#scr-pw");$("#pw-err").textContent="";["#pw-old","#pw-new","#pw-new2"].forEach(s=>$(s).value="");
+  $("#pw-why").textContent=forced?"Anda masuk dengan password sementara. Buat password baru sebelum melanjutkan.":"Masukkan password lama, lalu password baru.";
+  $("#pw-cancel").textContent=forced?"Keluar":"Kembali";$("#pw-cancel").dataset.forced=forced?"1":"";
+  $("#pw-old").focus();
+}
+$("#pw-cancel").onclick=()=>{if($("#pw-cancel").dataset.forced){logout()}else show("#scr-app")};
+$("#fm-pw").addEventListener("submit",async e=>{
+  e.preventDefault();$("#pw-err").textContent="";
+  if($("#pw-new").value!==$("#pw-new2").value){$("#pw-err").textContent="Ulangan password baru tidak sama.";return}
+  const b=$("#pw-btn");b.disabled=true;
+  try{await call("gantiPassword",token,$("#pw-old").value,$("#pw-new").value);me.gantiPassword=false;toast("Password berhasil diganti");startApp()}
+  catch(err){$("#pw-err").textContent=err.message}
+  b.disabled=false;
+});
+$("#btn-pw").onclick=()=>openPw(false);
+async function logout(){const t=token;endSession("");try{await call("logout",t)}catch(e){}}
+$("#btn-out").onclick=logout;
+
+/* ---------- app shell ---------- */
+(function(){const sel=$("#periode");const d=new Date();for(let i=0;i<12;i++){const x=new Date(d.getFullYear(),d.getMonth()-i,1);const v=x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0");const o=document.createElement("option");o.value=v;o.textContent=periodeLabel(v);sel.appendChild(o)}sel.value=periode;sel.onchange=()=>{periode=sel.value;load()}})();
+function startApp(){
+  show("#scr-app");$("#me-nama").textContent=me.nama;$("#me-jab").textContent=me.jabatan||(me.role==="pimpinan"?"Pimpinan":"Pegawai");
+  const tabs=me.role==="pimpinan"?[["dashboard","Dashboard"],["semua","Semua prospek"],["pegawai","Pegawai & target"]]:[["saya","Target & prospek saya"]];
+  $("#tabs").innerHTML=tabs.map(t=>`<button data-v="${t[0]}" aria-selected="false">${t[1]}</button>`).join("");
+  $("#tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>setView(b.dataset.v));
+  view=tabs[0][0];setView(view);load();
+}
+function setView(v){view=v;$("#tabs").querySelectorAll("button").forEach(b=>b.setAttribute("aria-selected",b.dataset.v===v));["saya","dashboard","semua","pegawai"].forEach(k=>$("#v-"+k).hidden=!data||k!==v)}
+async function load(){
+  $("#loading").hidden=!!data;
+  try{data=await call("getData",token,periode);TODAY=data.today||TODAY;me=data.me;$("#loading").hidden=true;setView(view);render()}
+  catch(err){$("#loading").hidden=false;$("#loading").textContent=err.message}
+}
+function render(){if(me.role==="pimpinan"){renderDash();renderSemua();renderTarget()}else renderSaya()}
+
+/* ---------- PEGAWAI ---------- */
+$("#f-status").innerHTML=STAGES.map(s=>`<option value="${s.k}">${s.l}</option>`).join("");
+$("#fl-st").innerHTML=$("#fl-st2").innerHTML=`<option value="">Semua status</option><option value="__aktif">Masih berjalan</option>`+STAGES.map(s=>`<option value="${s.k}">${s.l}</option>`).join("");
+["#q","#fl-st"].forEach(s=>$(s).addEventListener("input",renderSaya));
+let editing=null;
+function renderSaya(){
+  if(!data||me.role!=="pegawai")return;
+  const s=data.stats[0]||{};
+  $("#saya-sub").textContent="Periode "+periodeLabel(periode)+(s.targetPeriode&&s.targetPeriode!==periode?" · target mengikuti "+periodeLabel(s.targetPeriode):"");
+  const cM=ratio(s.nominal,s.targetNominal),cN=ratio(s.debitur,s.targetDebitur);
+  $("#saya-kpi").innerHTML=`
+   <div class="kpi"><span class="lb">Pencairan saya</span><span class="v">${rp(s.nominal)}</span>${meter(cM)}<span class="d">${s.targetNominal?pct(cM)+" dari target "+rp(s.targetNominal):"Target belum ditetapkan pimpinan"}</span></div>
+   <div class="kpi"><span class="lb">Debitur cair</span><span class="v">${s.debitur||0}<small> / ${s.targetDebitur||0}</small></span>${meter(cN)}<span class="d">${s.targetDebitur?pct(cN)+" dari target debitur":"Target belum ditetapkan"}</span></div>
+   <div class="kpi"><span class="lb">Prospek berjalan</span><span class="v">${s.berjalan||0}</span><span class="d">${s.masuk||0} prospek baru diinput bulan ini</span></div>`;
+  if(!$("#f-produk").options.length)$("#f-produk").innerHTML=data.produk.map(p=>`<option>${esc(p)}</option>`).join("");
+  const q=$("#q").value.trim().toLowerCase(),fs=$("#fl-st").value;
+  const list=data.prospek.filter(x=>(!q||String(x.nama).toLowerCase().indexOf(q)>=0)&&(!fs||(fs==="__aktif"?ACTIVE.indexOf(x.status)>=0:x.status===fs)))
+    .sort((a,b)=>(ACTIVE.indexOf(b.status)>=0)-(ACTIVE.indexOf(a.status)>=0)||String(b.tglUpdate).localeCompare(String(a.tglUpdate)));
+  const t=$("#tbl-saya");
+  if(!data.prospek.length){t.innerHTML=`<tr><td class="empty"><b>Belum ada prospek</b>Tekan “Tambah prospek” untuk mencatat calon nasabah pertama Anda.</td></tr>`;return}
+  if(!list.length){t.innerHTML=`<tr><td class="empty"><b>Tidak ada yang cocok</b>Ubah kata kunci atau filter.</td></tr>`;return}
+  t.innerHTML=`<thead><tr><th>Nasabah</th><th>Produk</th><th class="num">Plafon</th><th>Status</th><th>Update</th><th></th></tr></thead><tbody>`+list.map(x=>{
+    const i=ACTIVE.indexOf(x.status),nxt=i>=0?STAGES[i+1]:null,ds=daysSince(x.tglUpdate||x.tglInput);
+    return `<tr><td class="nm"><b>${esc(x.nama)}</b><span>${esc([x.alamat,x.telp].filter(Boolean).join(" · "))}${x.catatan?"<br>"+esc(x.catatan):""}</span></td><td>${esc(x.produk)}</td><td class="num">${rp(x.plafon)}</td>
+    <td><select class="stsel" data-id="${esc(x.id)}" aria-label="Status ${esc(x.nama)}">${STAGES.map(s=>`<option value="${s.k}" ${s.k===x.status?"selected":""}>${s.l}</option>`).join("")}</select></td>
+    <td style="white-space:nowrap">${fmtDate(x.tglUpdate||x.tglInput)}${i>=0&&ds>7?`<br><span class="stale">${ds} hari</span>`:""}</td>
+    <td style="white-space:nowrap">${nxt?`<button class="btn sm" data-next="${esc(x.id)}" data-st="${nxt.k}">Lanjut: ${nxt.l.split(" (")[0]}</button> `:""}<button class="btn sm ghost" data-edit="${esc(x.id)}">Ubah</button></td></tr>`}).join("")+`</tbody>`;
+}
+function openForm(x){
+  editing=x?x.id:null;$("#form-panel").hidden=false;$("#form-title").textContent=x?"Ubah prospek":"Prospek baru";$("#btn-save").textContent=x?"Simpan perubahan":"Simpan prospek";
+  $("#f-nama").value=x?x.nama:"";$("#f-telp").value=x?x.telp||"":"";$("#f-alamat").value=x?x.alamat||"":"";
+  $("#f-produk").value=x?x.produk:data.produk[0];$("#f-plafon").value=x&&x.plafon?fmtInt(x.plafon):"";
+  $("#f-status").value=x?x.status:"baru";$("#f-catatan").value=x?x.catatan||"":"";$("#f-nama").focus();
+}
+$("#btn-new").onclick=()=>openForm(null);
+$("#btn-cancel").onclick=()=>{$("#form-panel").hidden=true;editing=null};
+$("#f-plafon").addEventListener("input",e=>{const n=num(e.target.value);e.target.value=n?fmtInt(n):""});
+$("#fm-prospek").addEventListener("submit",async e=>{
+  e.preventDefault();const b=$("#btn-save");b.disabled=true;
+  try{await call("saveProspek",token,{id:editing,nama:$("#f-nama").value,telp:$("#f-telp").value,alamat:$("#f-alamat").value,produk:$("#f-produk").value,plafon:num($("#f-plafon").value),status:$("#f-status").value,catatan:$("#f-catatan").value});
+    toast(editing?"Prospek diperbarui":"Prospek tersimpan");$("#form-panel").hidden=true;editing=null;await load()}
+  catch(err){toast(err.message)}
+  b.disabled=false;
+});
+async function setStatus(id,st){try{await call("setStatus",token,id,st);toast("Status diperbarui: "+stLabel(st));await load()}catch(err){toast(err.message);renderSaya()}}
+$("#tbl-saya").addEventListener("change",e=>{if(e.target.matches(".stsel"))setStatus(e.target.dataset.id,e.target.value)});
+$("#tbl-saya").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.next){b.disabled=true;setStatus(b.dataset.next,b.dataset.st)}if(b.dataset.edit){openForm(data.prospek.find(x=>x.id===b.dataset.edit));window.scrollTo({top:0,behavior:"smooth"})}});
+
+/* ---------- PIMPINAN: dashboard ---------- */
+function renderDash(){
+  const rows=data.stats.filter(r=>r.aktif).map(r=>Object.assign({},r,{capNom:ratio(r.nominal,r.targetNominal)})).sort((a,b)=>b.capNom-a.capNom||b.nominal-a.nominal);
+  const sum=k=>rows.reduce((a,r)=>a+(r[k]||0),0);
+  const tNom=sum("targetNominal"),tNoa=sum("targetDebitur"),nom=sum("nominal"),noa=sum("debitur");
+  const P=data.prospek,aktif=P.filter(x=>ACTIVE.indexOf(x.status)>=0);
+  const selesai=P.filter(x=>(x.status==="cair"||x.status==="batal")&&ym(x.tglSelesai)===periode);
+  const konv=ratio(selesai.filter(x=>x.status==="cair").length,selesai.length);
+  $("#dash-sub").textContent="Periode "+periodeLabel(periode)+" · "+rows.length+" pegawai aktif";
+  const cM=ratio(nom,tNom),cN=ratio(noa,tNoa);
+  $("#kpis").innerHTML=`
+   <div class="kpi"><span class="lb">Pencairan</span><span class="v">${rp(nom)}</span>${meter(cM)}<span class="d">${pct(cM)} dari target ${rp(tNom)}</span></div>
+   <div class="kpi"><span class="lb">Debitur baru</span><span class="v">${noa}<small> / ${tNoa}</small></span>${meter(cN)}<span class="d">${pct(cN)} dari target debitur</span></div>
+   <div class="kpi"><span class="lb">Prospek berjalan</span><span class="v">${aktif.length}</span><span class="d">Nilai pipeline ${rp(aktif.reduce((a,x)=>a+(Number(x.plafon)||0),0))}</span></div>
+   <div class="kpi"><span class="lb">Rasio keberhasilan</span><span class="v">${selesai.length?pct(konv):"–"}</span><span class="d">${selesai.length} prospek cair/batal bulan ini</span></div>`;
+  const counts=STAGES.map(s=>Object.assign({},s,{n:ACTIVE.indexOf(s.k)>=0?P.filter(x=>x.status===s.k).length:P.filter(x=>x.status===s.k&&ym(x.tglSelesai)===periode).length}));
+  const mx=Math.max.apply(null,[1].concat(counts.map(c=>c.n)));
+  $("#funnel").innerHTML=counts.map(c=>`<div class="frow ${c.k==="cair"?"done":c.k==="batal"?"lost":""}"><span>${c.l}</span><div class="bar"><i style="width:${c.n/mx*100}%"></i></div><span class="n">${c.n}</span></div>`).join("");
+  $("#rank").innerHTML=!rows.length?`<tr><td class="empty"><b>Belum ada pegawai</b>Buat akun pegawai di menu Pegawai &amp; target.</td></tr>`:
+    `<thead><tr><th>#</th><th>Pegawai</th><th class="num">Berjalan</th><th class="num">Debitur</th><th>Capaian nominal</th><th class="num">Pencairan</th><th>Status</th></tr></thead><tbody>`+
+    rows.map((r,i)=>{const tl=toneLabel(r.capNom);return `<tr><td class="num" style="color:var(--muted)">${i+1}</td><td class="nm"><b>${esc(r.nama)}</b><span>${esc(r.jabatan)}</span></td><td class="num">${r.berjalan}</td><td class="num">${r.debitur}/${r.targetDebitur}</td><td><div class="cap">${meter(r.capNom)}<span>${pct(r.capNom)}</span></div></td><td class="num">${rp(r.nominal)}<br><span style="color:var(--muted);font-size:11px">dari ${rp(r.targetNominal)}</span></td><td>${r.targetNominal?`<span class="pill ${tl[0]}">${tl[1]}</span>`:`<span class="pill p-mute">Tanpa target</span>`}</td></tr>`}).join("")+`</tbody>`;
+  const st=aktif.filter(x=>daysSince(x.tglUpdate||x.tglInput)>7).sort((a,b)=>String(a.tglUpdate).localeCompare(String(b.tglUpdate)));
+  $("#stale").innerHTML=st.length?`<thead><tr><th>Nasabah</th><th>Pegawai</th><th>Status</th><th class="num">Plafon</th><th class="num">Tanpa update</th></tr></thead><tbody>`+st.map(x=>`<tr><td class="nm"><b>${esc(x.nama)}</b><span>${esc(x.produk)}</span></td><td>${esc(x.namaPegawai)}</td><td><span class="pill p-st">${stLabel(x.status)}</span></td><td class="num">${rp(x.plafon)}</td><td class="num"><span class="stale">${daysSince(x.tglUpdate||x.tglInput)} hari</span></td></tr>`).join("")+`</tbody>`
+    :`<tr><td class="empty"><b>Semua prospek terpantau</b>Tidak ada prospek aktif yang tertahan lebih dari 7 hari.</td></tr>`;
+}
+
+/* ---------- PIMPINAN: semua prospek ---------- */
+["#q2","#fl-peg2","#fl-st2"].forEach(s=>$(s).addEventListener("input",renderSemua));
+function renderSemua(){
+  if(!data||me.role!=="pimpinan")return;
+  const fp=$("#fl-peg2"),v=fp.value;fp.innerHTML=`<option value="">Semua pegawai</option>`+data.stats.map(s=>`<option value="${esc(s.username)}">${esc(s.nama)}</option>`).join("");fp.value=v;
+  const q=$("#q2").value.trim().toLowerCase(),fs=$("#fl-st2").value;
+  const list=data.prospek.filter(x=>(!v||x.username===v)&&(!q||String(x.nama).toLowerCase().indexOf(q)>=0)&&(!fs||(fs==="__aktif"?ACTIVE.indexOf(x.status)>=0:x.status===fs)))
+    .sort((a,b)=>String(b.tglUpdate).localeCompare(String(a.tglUpdate)));
+  $("#tbl-semua").innerHTML=!list.length?`<tr><td class="empty"><b>Tidak ada prospek</b>Belum ada data yang cocok dengan filter ini.</td></tr>`:
+    `<thead><tr><th>Nasabah</th><th>Pegawai</th><th>Produk</th><th class="num">Plafon</th><th>Status</th><th>Diinput</th><th>Update</th></tr></thead><tbody>`+list.map(x=>`<tr><td class="nm"><b>${esc(x.nama)}</b><span>${esc([x.alamat,x.telp].filter(Boolean).join(" · "))}${x.catatan?"<br>"+esc(x.catatan):""}</span></td><td>${esc(x.namaPegawai)}</td><td>${esc(x.produk)}</td><td class="num">${rp(x.plafon)}</td><td><span class="pill ${x.status==="cair"?"p-good":x.status==="batal"?"p-bad":"p-st"}">${stLabel(x.status)}</span></td><td>${fmtDate(x.tglInput)}</td><td>${fmtDate(x.tglUpdate)}</td></tr>`).join("")+`</tbody>`;
+}
+
+/* ---------- PIMPINAN: pegawai & target ---------- */
+function renderTarget(){
+  $("#tgt-sub").textContent="Target untuk "+periodeLabel(periode)+". Jika bulan ini belum diisi, target bulan sebelumnya tetap berlaku.";
+  const t=$("#tbl-target");
+  if(!data.stats.length){t.innerHTML=`<tr><td class="empty"><b>Belum ada pegawai</b>Buat akun pegawai di bawah.</td></tr>`;return}
+  t.innerHTML=`<thead><tr><th>Pegawai</th><th class="num">Target debitur</th><th class="num">Target pencairan (Rp)</th><th class="num">Realisasi</th><th></th></tr></thead><tbody>`+
+    data.stats.map(s=>`<tr data-u="${esc(s.username)}"><td class="nm"><b>${esc(s.nama)}</b><span>${esc(s.username)} · ${esc(s.jabatan)}${s.aktif?"":" · <b style='display:inline;color:var(--bad)'>nonaktif</b>"}${s.targetPeriode&&s.targetPeriode!==periode?" · target dari "+periodeLabel(s.targetPeriode):""}</span></td>
+    <td class="num"><input class="tg" data-f="d" aria-label="Target debitur ${esc(s.nama)}" inputmode="numeric" value="${s.targetDebitur||0}"></td>
+    <td class="num"><input class="tg wide" data-f="n" aria-label="Target pencairan ${esc(s.nama)}" inputmode="numeric" value="${fmtInt(s.targetNominal||0)}"></td>
+    <td class="num">${s.debitur} debitur<br><span style="color:var(--muted);font-size:11px">${rp(s.nominal)}</span></td>
+    <td style="white-space:nowrap;text-align:right"><button class="btn sm pri" data-act="save">Simpan target</button> <button class="btn sm ghost" data-act="reset">Reset password</button> <button class="btn sm ghost" data-act="aktif">${s.aktif?"Nonaktifkan":"Aktifkan"}</button></td></tr>`).join("")+`</tbody>`;
+}
+$("#tbl-target").addEventListener("input",e=>{if(e.target.dataset.f==="n"){const n=num(e.target.value);e.target.value=n?fmtInt(n):""}});
+$("#tbl-target").addEventListener("click",async e=>{
+  const b=e.target.closest("button[data-act]");if(!b)return;const tr=b.closest("tr"),u=tr.dataset.u,s=data.stats.find(x=>x.username===u);b.disabled=true;
+  try{
+    if(b.dataset.act==="save"){await call("saveTarget",token,u,periode,num(tr.querySelector('[data-f="d"]').value),num(tr.querySelector('[data-f="n"]').value));toast("Target "+s.nama+" disimpan");await load()}
+    if(b.dataset.act==="reset"){if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="Yakin reset?";b.disabled=false;setTimeout(()=>{b.dataset.armed="";b.textContent="Reset password"},4000);return}
+      const r=await call("resetPassword",token,u);showTemp(s.nama,r.username,r.passwordSementara)}
+    if(b.dataset.act==="aktif"){await call("setAktif",token,u,!s.aktif);toast(s.nama+(s.aktif?" dinonaktifkan":" diaktifkan"));await load()}
+  }catch(err){toast(err.message)}
+  b.disabled=false;
+});
+function showTemp(nama,user,pw){const n=$("#temp-pw");n.hidden=false;n.innerHTML=`Akun <b>${esc(nama)}</b> siap. Berikan langsung ke pegawai yang bersangkutan (jangan lewat grup):<br>Username <span class="secret">${esc(user)}</span> &nbsp; Password sementara <span class="secret">${esc(pw)}</span><br><span class="sub">Password ini hanya ditampilkan sekali. Pegawai wajib menggantinya saat login pertama.</span>`;n.scrollIntoView({behavior:"smooth",block:"center"})}
+$("#u-jab").onchange=e=>{$("#u-role").value=e.target.value==="Pimpinan"?"pimpinan":"pegawai"};
+$("#fm-user").addEventListener("submit",async e=>{
+  e.preventDefault();const b=$("#u-btn");b.disabled=true;
+  try{const nama=$("#u-nama").value;const r=await call("tambahPengguna",token,{nama:nama,username:$("#u-user").value,jabatan:$("#u-jab").value,role:$("#u-role").value});
+    $("#u-nama").value="";$("#u-user").value="";showTemp(nama,r.username,r.passwordSementara);await load()}
+  catch(err){toast(err.message)}
+  b.disabled=false;
+});
+
+/* ---------- boot ---------- */
+if(!API_URL){$("#l-err").textContent="Alamat server belum diisi di config.js.";}
+if(token){show("#scr-app");call("getData",token,periode).then(d=>{me=d.me;afterLogin()}).catch(()=>endSession(""))}else show("#scr-login");
+})();
+</script>
+</body>
+</html>
